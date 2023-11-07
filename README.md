@@ -1,3 +1,6 @@
 # muvwheel_backend
 
-test
+
+# setup
+* โปรแกรมที่ต้องใช้
+
