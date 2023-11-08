@@ -1,0 +1,50 @@
+<!-- FILEPATH: /Users/wisakhem/Documents/GitHub/muvwheel/muvwheel_backend/public/map.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Map</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My Map</h1>
+    <div id="map"></div>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg"></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg&libraries=places&callback=initMap" async defer></script>
+
+    <script>
+      function initMap() {
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 25,  // ระดับการซูมของแผนที่
+            center: { lat : 13.7643701,lng : 100.5385075 },  // ตำแหน่งศูนย์กลางของแผนที่
+        });
+        
+        // เรียกคำขอสร้างเส้นทาง
+        directionsService.route({
+            origin: 'หอพักนิสิตจุฬา',
+            destination: 'อนุเสาวรีย์ชัยสมรภูมิ',
+            travelMode: 'TRANSIT',  // หรือใช้ 'WALKING' หรือ 'TRANSIT' ตามที่คุณต้องการ
+            transitOptions: {
+              modes: ['BUS'],  // ระบุว่าคุณต้องการใช้รถบัส
+            },
+        }, (response, status) => {
+            if (status === 'OK') {
+            directionsRenderer.setDirections(response);
+            directionsRenderer.setMap(map);
+            } else {
+            window.alert('error to find a route: ' + status);
+            }
+        });
+        }
+
+      google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+  </body>
+</html>
