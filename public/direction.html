@@ -1,0 +1,81 @@
+<!-- FILEPATH: /Users/wisakhem/Documents/GitHub/muvwheel/muvwheel_backend/public/map.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Map</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My Map</h1>
+    <div id="map"></div>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg&libraries=places&callback=initMap" async defer></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.1/firebase-firestore.js"></script> -->
+    <script>
+      // import firebase from 'firebase/app';
+      // import 'firebase/firestore';
+      const firebase = require('firebase');
+      const db = firebase.firestore()
+
+      function initMap() {
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,  // ระดับการซูมของแผนที่
+            center: { lat : 13.7643701,lng : 100.5385075 },  // ตำแหน่งศูนย์กลางของแผนที่
+        });
+        
+        // เรียกคำขอสร้างเส้นทาง
+        directionsService.route({
+            origin: 'หอพักนิสิตจุฬา',
+            destination: 'โรงแรมปิคนิค',
+            travelMode: 'TRANSIT',  // หรือใช้ 'WALKING' หรือ 'TRANSIT' ตามที่คุณต้องการ
+            transitOptions: {
+              modes: ['BUS'],  // ระบุว่าคุณต้องการใช้รถบัส
+            },
+        }, (response, status) => {
+            if (status === 'OK') {
+              // ดึงข้อมูล transit details
+              const transitDetails = response.routes[0].legs[0].steps
+                .filter(step => step.travel_mode === 'TRANSIT')
+                .map(step => step.transit_details);
+              
+              // ดึงข้อมูลจุดเริ่มต้นและจุดหมายปลายทาง
+              const origin = response.routes[0].legs[0].start_address;
+              const destination = response.routes[0].legs[0].end_address;
+
+              // สร้าง object ที่มีข้อมูลทั้งหมด
+              const dataToStore = {
+                origin: origin,
+                destination: destination,
+                transitDetails: transitDetails,
+              };
+
+              // เขียนข้อมูลลงใน Firestore
+              const docRef = db.collection('route data').doc('AcQvKe0eMwji3VhjYepl');
+              docRef.set(dataToStore)
+                .then(() => {
+                  console.log('Data has been successfully stored in Firestore with ID:', docRef.id);
+                })
+                .catch((error) => {
+                  console.error('Error storing data in Firestore:', error);
+                });
+            directionsRenderer.setDirections(response);
+            directionsRenderer.setMap(map);
+            } else {
+            window.alert('error to find a route: ' + status);
+            }
+        });
+        }
+
+      google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+  </body>
+</html>
