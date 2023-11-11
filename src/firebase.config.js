@@ -1,11 +1,14 @@
 // Import the functions you need from the SDKs you need
-const firebase = require('firebase')
+const firebase = require('firebase-admin')
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+var serviceAccount = require('../key/muvwheel-firebase-adminsdk.json')
+
 const firebaseConfig = {
+  credential: firebase.credential.cert(serviceAccount),
   apiKey: 'AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg',
   authDomain: 'muvwheel.firebaseapp.com',
   projectId: 'muvwheel',
@@ -20,7 +23,10 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore()
+const auth = firebase.auth()
 const user = db.collection('users')
 
-// export const auth = getAuth(app);
-module.exports = user
+module.exports = {
+  database: user,
+  auth: auth,
+}

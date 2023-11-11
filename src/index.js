@@ -1,6 +1,7 @@
 const express = require('express')
-const database = require('./firebase.config')
+const { database, auth } = require('./firebase.config')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
 
 const app = express()
 
@@ -14,10 +15,64 @@ app.get('/', async (req, res) => {
   res.send(list)
 })
 
+app.post('/getuid', (req, res) => {
+  uid = req.body.uid ?? ''
+  firebaseToken = req.body.firebaseToken ?? ''
+
+  if (!uid || !firebaseToken) {
+    return res.status(400).send({
+      msg: 'Bad request',
+    })
+  }
+
+  auth
+    .verifyIdToken(firebaseToken)
+    .then((decodedToken) => {
+      const decodedUid = decodedToken.uid
+      if (uid != decodedUid) {
+        return res.status(401).send({
+          msg: 'token ผิด',
+        })
+      }
+    })
+    .catch((error) => {
+      return res.status(401).send({
+        msg: 'token ผิด',
+      })
+    })
+
+  database
+    .where('uid', '==', uid)
+    .get()
+    .then(function (querySnapshot) {
+      if (querySnapshot.empty) {
+        return res.status(404).send({
+          msg: 'Not found',
+        })
+      } else {
+        querySnapshot.forEach(function (doc) {
+          const token = jwt.sign(doc.data(), 'catzero1337')
+
+          return res.status(200).send({
+            token: token,
+          })
+        })
+      }
+    })
+    .catch(function (error) {
+      console.log('Error getting documents: ', error)
+      return res.status(400).send({
+        msg: 'Bad request',
+      })
+    })
+})
+
 app.post('/register', async (req, res) => {
   const data = req.body
+  console.log(data)
   await database.add(data)
-  res.send({ msg: 'User Added' })
+  const token = jwt.sign(data, 'catzero1337')
+  res.send({ token: token })
 })
 
 app.listen(3001, () => console.log('💐 Server is running at 3001'))
