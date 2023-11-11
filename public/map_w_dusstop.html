@@ -1,0 +1,48 @@
+<!-- FILEPATH: /Users/wisakhem/Documents/GitHub/muvwheel/muvwheel_backend/public/map_w_dusstop.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map with Bus Stops</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg"></script>
+    <script>
+      function initMap() {
+        // Set the center of the map to a specific location
+        var center = { lat : 13.7643701,lng : 100.5385075  };
+        var map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 15,
+          center: center,
+        });
+
+        // Create a nearby search request for bus stops
+        var request = {
+          location: center,
+          radius: "500",
+          type: ["bus_station"],
+        };
+
+        // Perform the nearby search and add markers for each result
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, function (results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length; i++) {
+              var place = results[i];
+              var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location,
+              });
+
+              // Add a click listener to the marker to log the latitude and longitude
+              marker.addListener("click", function () {
+                console.log(this.getPosition().lat(), this.getPosition().lng());
+              });
+            }
+          }
+        });
+      }
+    </script>
+  </head>
+  <body onload="initMap()">
+    <div id="map" style="height: 500px; width: 100%;"></div>
+  </body>
+</html>

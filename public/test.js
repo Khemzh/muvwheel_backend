@@ -1,5 +1,6 @@
-function testa() {
+
+function test() {
     return "test"
 }
 
-module.exports = {testa}
+module.exports = {test}
