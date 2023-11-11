@@ -1,4 +1,4 @@
-const { Loader } = require("@googlemaps/js-api-loader");
+// const { Loader } = require("@googlemaps/js-api-loader");
 
 //import { Loader } from "@googlemaps/js-api-loader"
 //Loader = require("@googlemaps/js-api-loader")
@@ -6,22 +6,30 @@ let map;
 
 async function initMap() {
 
-    const loader = new Loader({
-        apiKey: "AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg",
-        version: "weekly"
-    });
-    
-    loader.load().then(async () => {
-        const { Map } = await google.maps.importLibrary("maps");
+    // const loader = new Loader({
+    //     apiKey: "AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg",
+    //     version: "weekly"
+    // });
 
-        map = new Map(document.getElementById("map"), {
-          center: { lat: 13.7563, lng: 100.5018 },
-          zoom: 8,
-        });
+    // loader.load().then(async () => {
+    //     const { Map } = await google.maps.importLibrary("maps");
+
+    //     map = new Map(document.getElementById("map"), {
+    //       center: { lat: 13.7563, lng: 100.5018 },
+    //       zoom: 8,
+    //     });
+    // }).catch((err) => {
+    //     console.error(err);
+    // });
+    const { Map } = await google.maps.importLibrary("maps");
+
+    map = new Map(document.getElementById("map"), {
+        center: { lat: 13.7563, lng: 100.5018 },
+        zoom: 17,
     });
 }
 
-function initMaps() {
+export function initMaps() {
     initMap();
 }
 
@@ -56,6 +64,8 @@ function renderMap() {
 
     return html;
 }
+initMaps();
 
 //module.exports = {renderMap}
-module.exports = {initMaps}
+// module.exports = {initMaps}
+window.initMaps = initMaps;
