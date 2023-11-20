@@ -25,8 +25,10 @@ firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore()
 const auth = firebase.auth()
 const user = db.collection('users')
+const fav = db.collection('favs')
 
 module.exports = {
   database: user,
   auth: auth,
+  favDatabase: fav,
 }

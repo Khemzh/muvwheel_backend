@@ -1,6 +1,7 @@
 const express = require('express')
-const { database, auth } = require('./firebase.config')
+const { database, auth, favDatabase } = require('./firebase.config')
 const cors = require('cors')
+const middleware = require('./middleware/auth')
 const jwt = require('jsonwebtoken')
 
 const app = express()
@@ -50,12 +51,14 @@ app.post('/getuid', (req, res) => {
           msg: 'Not found',
         })
       } else {
-        querySnapshot.forEach(function (doc) {
-          const token = jwt.sign(doc.data(), 'catzero1337')
+        let token = ''
 
-          return res.status(200).send({
-            token: token,
-          })
+        querySnapshot.forEach(function (doc) {
+          token = jwt.sign(doc.data(), 'catzero1337')
+        })
+
+        return res.status(200).send({
+          token: token,
         })
       }
     })
@@ -73,6 +76,53 @@ app.post('/register', async (req, res) => {
   await database.add(data)
   const token = jwt.sign(data, 'catzero1337')
   res.send({ token: token })
+})
+
+app.post('/favourite/create', middleware, async (req, res) => {
+  latlong = req.body.latlong ?? ''
+
+  if (!latlong) {
+    return res.status(400).send({
+      msg: 'Bad request',
+    })
+  }
+
+  console.log(latlong)
+  await favDatabase.add({
+    uid: req.jwt.uid,
+    latlong: latlong,
+  })
+
+  res.send({ msg: 'ok' })
+})
+
+app.post('/favourite/get', middleware, (req, res) => {
+  favDatabase
+    .where('uid', '==', req.jwt.uid)
+    .get()
+    .then(function (querySnapshot) {
+      if (querySnapshot.empty) {
+        return res.status(404).send({
+          msg: 'Not found',
+        })
+      } else {
+        let list = []
+
+        querySnapshot.forEach(function (doc) {
+          list.push(doc.data())
+        })
+
+        return res.status(200).send({
+          data: list,
+        })
+      }
+    })
+    .catch(function (error) {
+      console.log('Error getting documents: ', error)
+      return res.status(400).send({
+        msg: 'Bad request',
+      })
+    })
 })
 
 app.listen(3001, () => console.log('💐 Server is running at 3001'))
