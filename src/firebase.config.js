@@ -7,17 +7,18 @@ const firebase = require('firebase-admin')
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 var serviceAccount = require('../key/muvwheel-firebase-adminsdk.json')
 
+require('dotenv').config() // Load environment variables from .env file
+
 const firebaseConfig = {
-  credential: firebase.credential.cert(serviceAccount),
-  apiKey: 'AIzaSyCUP4lwuTEXSPnFmJIY_eGSEnOGDGPxMRg',
-  authDomain: 'muvwheel.firebaseapp.com',
-  projectId: 'muvwheel',
-  storageBucket: 'muvwheel.appspot.com',
-  messagingSenderId: '311607180749',
-  appId: '1:311607180749:web:7d4521e795d2023efa9884',
-  measurementId: 'G-XHVX8FYGV5',
-  databaseURL:
-    'https://muvwheel-default-rtdb.asia-southeast1.firebasedatabase.app/',
+    credential: firebase.credential.cert(serviceAccount),
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJEC_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_API_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
 }
 
 // Initialize Firebase
