@@ -27,9 +27,11 @@ const db = firebase.firestore()
 const auth = firebase.auth()
 const user = db.collection('users')
 const fav = db.collection('favs')
+const his = db.collection('his')
 
 module.exports = {
   database: user,
   auth: auth,
   favDatabase: fav,
+  hisdb: his
 }
